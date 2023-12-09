@@ -10,57 +10,102 @@ Development of software application for analysis and processing of dvbs2 receive
 3. Extraction of VoIP calls, audio and video programs, file, email, web-page etc in separate files. 
 4. Decoding and playing selected audio/video contents Preferred Language- Python, Lab-view, C/C++, VHDL/Verilog Expected Outcome- Algorithm/Software/GUI Preferred Platform- Windows/Linux
 
+## Tasks
+
+
+### Physical layer to Datalink layer
+
+- [ ] Study GSE header and payload
+- [ ] Extract TS (stream/packetized) and GSE (stream/packetized) data from BB frames
+- [ ] Generate dummy test data for all the input streams
+- [ ] Find libraries and packages
+
+### Application layer
+
+- [ ] Analyze application layer packets using Pyshark/ Scapy and extract useful data.
+- [ ] Display application layer payload data as output.
+- [ ] Fix one standard library based on the use cases.
+
+### GUI
+
+- [ ] Create a GUI using packages, fix one standard package for final implementation.
+- [ ] Integrate and display basic audio video files on the GUI.
+- [ ] CLI based application approach (optional)
+
+### Test cases generation 
+
+- [ ] Use [dvbs2](https://github.com/igorauad/gr-dvbs2rx) to generate SDR based input test cases for MPEG-TS stream.
+- [ ] Search for other GNU Radio - SDR based projects for dvbs2 test case generation 
+
 ## Study
 DVBS2 is a standard for live video broadcasting, and data transfer through satellite link. It is populary used for Dish TV applications.
 
 ### DVBS2 architecture
-![architecture](images/dvbsarch.png)
+<img alt="arch" src="images/dvbsarch.png" height="200"/>
 
 ### DVBS2 system block diagram
-![system block diagram](images/sysblock.png)
+<img alt="arch" src="images/sysblock.png" height="300"/>
 
-### DVBS2 frame
-![dvbs2 frame](images/dvbs2frame.png)
-
-Based on the mentioned architecture and system block diagram, for transmitting any data content using DVBS2, it needs to be first converted to a stream format before passing it to BB frames. There are two stream formats available for DVBS2 standard.
-
-```
-Audio, Video, Subtitles (.mp4, .av, etc) - TS encapsulation 
-IP Packets (UDP packets, HTTP packets, etc) - GSE encapsulation 
-```
-
-#### Transport Stream (TS):
-Purpose: <br>
-Transport Stream is a standard for the transmission and storage of audio, video, and data, primarily used in digital broadcasting and streaming. It is commonly employed in DVB, ATSC (Advanced Television Systems Committee), and other standards.
-
-Structure:<br>
-
-![ts structure](images/tspacket.png)
-
-TS has a fixed packet size of 188 bytes. Each packet consists of a 4-byte header and a 184-byte payload. TS packets may carry audio, video, or other data, and they are identified by a Packet Identifier (PID) in the header.
-
-#### Generic Stream Encapsulation (GSE):
-
-![Alt text](images/gsepacket.png)
-
-Purpose:<br>
-Generic Stream Encapsulation, or GSE for short, is a <b><u>Data link layer</u></b> protocol defined by DVB. GSE provides means to carry packet oriented protocols such as IP on top of uni-directional physical layers such as DVB-S2, DVB-T2 and DVB-C2.
-
-Structure:<br>
-
-![Alt text](images/gseheader.png)
-
-GSE packets encapsulate IP packets and are variable in length, making them more adaptable to the varying sizes of IP packets. GSE introduces a set of headers that provide information about the encapsulated IP packet, such as length, protocol type, and other metadata.
-
-Fragmentation and Reassembly:<br>
-The basic mechanism of GSE payload fragmentation uses the Start and End Flags, where the Start flag indicates the beginning of a payload frame, and the End flag indicates its end. This is shown in the table below.
-
-| Start | End | GSE Packet Content                |
-|-------|-----|----------------------------------|
-| 1     | 0   | Total payload size / Protocol type / Payload start |
-| 0     | 0   | Payload continuation              |
-| 0     | 1   | Payload end / CRC-32              |
 <br>
+
+```
+All types of data, including audio, video, text, etc., should be in stream format before reaching the baseband frame, which is then forwarded as DVB-S2.
+```
+### The input stream sequences are:
+ - TS continuous single stream
+ - TS continous multiple stream
+ - TS packetized stream using MPE 
+ - GSE continous single stream
+ - GSE continous multiple stream
+ - GSE packetized stream
+
+#### Mode Adaption block
+This sub-system shall perform Input Interfacing, Input Stream Synchronization (optional), Null-packet deletion (for TS
+input streams and ACM only), CRC-8 encoding for error detection (for packetized input streams only), input stream
+merging (for multiple input streams only) and input stream slicing in DATA FIELDs. Finally, base-band signalling
+shall be inserted, to notify the receiver of the adopted Mode Adaptation format.
+The output sequence is a BBHEADER (80 bits) followed by a DATA FIELD.
+
+
+
+### Refer Page no 1 and 2 for GSE, MPE, ULE based encapsulation methods
+https://sci-hub.se/https://ieeexplore.ieee.org/document/4409401 <br>
+
+
+### BB Header 
+A fixed length base-band Header of 10 bytes. 
+Describes the format of the DATA FIELD.
+
+| Field      | Size in Bytes | Description                                               | Values                                                                        |
+|--------------|---|-----------------------------------------------------------|-------------------------------------------------------------------------------|
+| MATYPE 1    | 1 | Input stream(s) format, Mode Adaptation, and Roll-off factor. | First byte (MATYPE-1): TS/GS (2 bits), SIS/MIS (1 bit), CCM/ACM (1 bit), ISSYI (1 bit), NPD (1 bit), RO (2 bits). |
+| MATYPE 2   | 1 |                                                           | Second byte (MATYPE-2): If SIS/MIS = Multiple Input Stream, then ISI; else reserved. |
+| UPL        | 2 | User Packet Length in bits (0 to 65,535).                 | Example 1: 0000HEX = continuous stream. Example 2: 000AHEX = UP length of 10 bits. Example 3: UPL = 188x8D for MPEG transport stream packets. |
+| DFL        | 2 | Data Field Length in bits (0 to 58,112).                 | Example 4: 000AHEX = Data Field length of 10 bits. |
+| SYNC       | 1 | Copy of the User Packet Sync-byte.                        | Example 5: SYNC = 47HEX for MPEG transport stream packets. Example 6: SYNC = 00HEX when the input Generic packetized stream did not contain a sync-byte. |
+| SYNCD     | 2 | Distance in bits from the beginning of the DATA FIELD to the first UP. | For packetized Transport or Generic Streams: SYNCD = 65535D (no UP starts in the DATA FIELD). For Continuous Generic Streams: SYNCD= 0000 - FFFF (reserved for future uses). |
+| CRC-8     | 1 | Error detection code applied to the first 9 bytes of the BBHEADER. | Computed using the encoding circuit of figure 2 (switch in A for 72 bits, in B for 8 bits). |
+
+
+
+
+### BB Header MATYPE-1 (1 byte) field mapping
+| Field | Description | Values | size in bits |
+|---|---|---|---|
+| TS/GS | Transport Stream or Generic Stream | 11 = Transport, 00 = Generic packetized, 01 = Generic continuous, 10 = reserved | 2 |
+| SIS/MIS | Single Input Stream or Multiple Input Stream | 1 = Single, 0 = Multiple | 1 |
+| CCM/ACM | Constant Coding and Modulation or Adaptive Coding and Modulation | 1 = CCM, 0 = ACM | 1 |
+| ISSYI | Input Stream Synchronization Indicator | 1 = Active, 0 = Not Active | 1 |
+| NPD | Null-Packet Deletion | 1 = Active, 0 = Not Active | 1 |
+| RO | Transmission Roll-off factor | 00 = 0.35, 01 = 0.25, 10 = 0.20, 11 = reserved | 2 |
+
+
+
+
+#### Standard BB Header configurations based on different applications
+https://www.etsi.org/deliver/etsi_en/302300_302399/30230701/01.04.01_20/en_30230701v010401a.pdf <br>
+Refer Page no 62, Table D.2
+
 
 ## Available libraries and tools
 1. https://github.com/igorauad/gr-dvbs2rx </br>
@@ -73,17 +118,21 @@ It has two modes, programming mode where we can use the C++ based APIs in our sc
 3. https://ffmpeg.org/ <br>
 This library can be used for converting TS frames to .mp4 format and vice-versa. It can also be used for converting various 
 4. https://www.gnuradio.org/ <br>
-This is a software defined radio toolkit, mainly used generating and performing all the SDR operations.<br>
+This is a software defined radio toolkit, mainly used for generating and performing all the SDR operations.<br>
 (Preferably not useful for us because of the complexity.)
 5. https://pypi.org/project/pyshark/ <br>
 Pyshark is a python wrapper for tshark. It is used for packet analysis similar to Wireshark.
+6. https://scapy.net/ Python package to generate customized packets.
 <br><br>
 
 ## Resources
 Video resources and documentation.
-1. https://youtu.be/nXenBqdzLbs?si=EtbaeYPTZ2UNpQnr dvbs2 frame
-2. https://youtu.be/NnuLbmaeuNI?si=937mIHfPdlokbgva dvbs2 architecture 
-3. https://en.wikipedia.org/wiki/Generic_Stream_Encapsulation GSE
-4. https://en.wikipedia.org/wiki/MPEG_transport_stream TS
-5. https://tsduck.io/download/docs/mpegts-introduction.pdf TSDUCK MPEG-TS intro
-6. https://erg.abdn.ac.uk/future-net/digital-video/ dvb
+1. https://www.etsi.org/deliver/etsi_en/302300_302399/30230701/01.04.01_20/en_30230701v010401a.pdf Complete DVBS2 documentation
+2. https://youtu.be/nXenBqdzLbs?si=EtbaeYPTZ2UNpQnr dvbs2 frame
+3. https://youtu.be/NnuLbmaeuNI?si=937mIHfPdlokbgva dvbs2 architecture 
+4. https://en.wikipedia.org/wiki/Generic_Stream_Encapsulation GSE
+5. https://en.wikipedia.org/wiki/MPEG_transport_stream TS
+6. https://tsduck.io/download/docs/mpegts-introduction.pdf TSDUCK MPEG-TS intro 
+7. https://erg.abdn.ac.uk/future-net/digital-video/ dvb
+8. https://tsduck.io/download/docs/tsduck.pdf user's guide for TSDUCK
+9. https://wiki.sans.blue/Tools/pdfs/ScapyCheatSheet_v0.2.pdf scapy cheatsheet
