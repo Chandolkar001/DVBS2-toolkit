@@ -83,31 +83,158 @@
 
 """"""
 
-import tkinter as tk
+# import tkinter as tk
 
-def on_configure(event):
-    # Update the frame size when the window is resized
-    frame.config(width=event.width - 20, height=event.height - 20)
+# def on_configure(event):
+#     # Update the frame size when the window is resized
+#     frame.config(width=event.width - 20, height=event.height - 20)
+
+# # Create the main Tkinter window
+# root = tk.Tk()
+# root.title("Dynamic Frame Size Example")
+
+# # Create a frame with an initial size
+# frame = tk.Frame(root, width=200, height=100, padx=10, pady=10, relief="solid", borderwidth=2)
+# frame.pack(fill="both", expand=True)  # Fill the available space
+
+# # Add widgets to the frame
+# label_in_frame = tk.Label(frame, text="This label is in the frame")
+# label_in_frame.pack()
+
+# button_in_frame = tk.Button(frame, text="Click Me!")
+# button_in_frame.pack()
+
+# # Bind the on_configure function to the Configure event
+# root.bind("<Configure>", on_configure)
+
+# root.geometry('1600x800')
+
+# # Start the Tkinter event loop
+# root.mainloop()
+
+""""""
+
+# import tkinter as tk
+
+# root = tk.Tk()
+# root.title("Grid Example")
+
+# # Configure rows and columns to have equal weight so they share the available space equally
+# for i in range(3):
+#     root.grid_rowconfigure(i, weight=1)
+#     root.grid_columnconfigure(i, weight=1)
+
+# # Create frames
+# frame1 = tk.Frame(root, bg="lightgreen", relief="solid", borderwidth=2)
+# frame2 = tk.Frame(root, bg="lightblue", relief="solid", borderwidth=2)
+# frame3 = tk.Frame(root, bg="lightcoral", relief="solid", borderwidth=2)
+
+# # Place frames in cells
+# frame1.grid(row=0, column=0,rowspan=3,columnspan=1, sticky="nsew")
+# frame2.grid(row=0, column=2, sticky="nsew")
+# frame3.grid(row=1, column=2, sticky="nsew")
+
+# # Add labels or other widgets within frames if needed
+# label_frame1 = tk.Label(frame1, text="Frame 1")
+# label_frame1.pack()
+
+# label_frame2 = tk.Label(frame2, text="Frame 2")
+# label_frame2.pack()
+
+# label_frame3 = tk.Label(frame3, text="Frame 3")
+# label_frame3.pack()
+
+# root.geometry("800x600")
+
+# root.mainloop()
+
+
+""""""
+# import tkinter as tk
+# from lorem_text import lorem
+
+# def update_labels():
+#     label1.config(text="Updated Text 1")
+#     label2.config(text="Updated Text 2")
+
+# root = tk.Tk()
+# root.title("Labels with Margin Example")
+
+# # Configure row and column weights
+# root.grid_rowconfigure(0, weight=1)
+# root.grid_columnconfigure(0, weight=1)
+# root.grid_rowconfigure(1, weight=1)
+# root.grid_columnconfigure(1, weight=1)
+
+# lorem.sentence()
+
+# # Create Labels
+# label1 = tk.Label(root, text=lorem.sentence(), bg="#2e2e2e", font=("Helvetica", 12), wraplength=200)
+# label1.grid(row=0, column=0, pady=10, sticky="nsew")
+
+# label2 = tk.Label(root, text="Label 2 Lorem", bg="#2e2e2e", font=("Helvetica", 12), wraplength=200)
+# label2.grid(row=1, column=1, pady=10, padx=10, sticky="nsew")
+
+# root.geometry("800x600")
+
+# root.mainloop()
+
+""""""
+
+import tkinter as tk
+from tkinter import ttk
+from PIL import Image, ImageTk
+
+def display_image():
+    image_path = "sample_image.png"
+    img = Image.open(image_path)
+    img = img.resize((300, 200))
+    photo = ImageTk.PhotoImage(img)
+    
+    image_label.config(image=photo)
+    image_label.image = photo
+
+def display_video():
+    # Replace "path/to/your/video.mp4" with the actual path to your video file
+    video_path = "sample_video.mp4"
+    
+    # You'll need to install a video player library, such as cv2, for this to work
+    import cv2
+    
+    cap = cv2.VideoCapture(video_path)
+    ret, frame = cap.read()
+    
+    # Convert the frame from BGR to RGB
+    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    
+    # Convert the frame to a PhotoImage
+    photo = ImageTk.PhotoImage(Image.fromarray(frame_rgb))
+    
+    video_label.config(image=photo)
+    video_label.image = photo
+
+    # Update the video display periodically
+    video_label.after(30, display_video)
 
 # Create the main Tkinter window
 root = tk.Tk()
-root.title("Dynamic Frame Size Example")
+root.title("Media Display Example")
 
-# Create a frame with an initial size
-frame = tk.Frame(root, width=200, height=100, padx=10, pady=10, relief="solid", borderwidth=2)
-frame.pack(fill="both", expand=True)  # Fill the available space
+# Create a label for displaying an image
+image_label = tk.Label(root)
+image_label.pack(pady=10)
 
-# Add widgets to the frame
-label_in_frame = tk.Label(frame, text="This label is in the frame")
-label_in_frame.pack()
+# Create a button to trigger image display
+image_button = tk.Button(root, text="Display Image", command=display_image)
+image_button.pack(pady=10)
 
-button_in_frame = tk.Button(frame, text="Click Me!")
-button_in_frame.pack()
+# Create a label for displaying a video
+video_label = ttk.Label(root)
+video_label.pack(pady=10)
 
-# Bind the on_configure function to the Configure event
-root.bind("<Configure>", on_configure)
+# Create a button to trigger video display
+video_button = tk.Button(root, text="Display Video", command=display_video)
+video_button.pack(pady=10)
 
-root.geometry('1600x800')
-
-# Start the Tkinter event loop
+root.geometry("400x600")
 root.mainloop()
