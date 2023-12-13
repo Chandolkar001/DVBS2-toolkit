@@ -10,6 +10,26 @@ Development of software application for analysis and processing of dvbs2 receive
 3. Extraction of VoIP calls, audio and video programs, file, email, web-page etc in separate files. 
 4. Decoding and playing selected audio/video contents Preferred Language- Python, Lab-view, C/C++, VHDL/Verilog Expected Outcome- Algorithm/Software/GUI Preferred Platform- Windows/Linux
 
+### Project Cloning Setup and Guide
+#### Prerequisites
+- Python 3
+- Node.js (for React)
+- Python virtualenv package
+
+#### Clone the repository
+```bash
+git clone https://github.com/Chandolkar001/SIH23-DVBS2.git
+cd SIH23-DVBS2
+```
+
+#### Creating Python Virtual Enviornment (Ubuntu)
+```bash
+cd server
+virtualenv venv
+source venv/bin/activate
+pip3 install -r requirements.txt
+```
+
 ## Tasks
 
 
