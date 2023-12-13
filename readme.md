@@ -123,7 +123,9 @@ This is a software defined radio toolkit, mainly used for generating and perform
 5. https://pypi.org/project/pyshark/ <br>
 Pyshark is a python wrapper for tshark. It is used for packet analysis similar to Wireshark.
 6. https://scapy.net/ Python package to generate customized packets.
-<br><br>
+<br>
+7. https://github.com/CNES/libgse/tree/master GSE packet header extraction, encapsulation, decapsulation, etc using C library functions.
+8. https://github.com/ssloxford/gsextract Requires an input file with DVB-S BB frames and gives output as pcap file with containing all the internet traffic transmitted through DVB.
 
 ## Resources
 Video resources and documentation.
