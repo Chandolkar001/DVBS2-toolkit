@@ -27,10 +27,13 @@ def process_pcap(file : File):
             protocols = list(set([x.layer_name for x in pkt.layers]))
 
             pkt_dir = {
+                "number" : pkt.number,
                 "src" : src,
                 "dst": dst,
                 "time_elapsed" : time_elapsed,
                 "protocols" : protocols,
+                "length" : pkt.length,
+                # "info" : pkt.info,
                 
             }
             packets.append(pkt_dir)

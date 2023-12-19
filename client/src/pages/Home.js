@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Home.css'
 import { Col, Row, Container, Button, Dropdown } from 'react-bootstrap';
 import PcapUpload from '../components/pcap/PcapUpload';
@@ -6,6 +6,11 @@ import no_preview from '../assets/no-prev.png'
 import sih_logo from '../assets/sih-logo.png'
 import ProtocolsTable from '../components/tables/ProtocolsTable';
 function Home() {
+
+    const [pktsData, setPktsData] = useState([]);
+    const [summData, setSummData] = useState([]);
+    const [uploaded, setUploaded] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const sideOptions = [
         {
@@ -62,10 +67,28 @@ function Home() {
                         ))}
                     </div>
                 </Col>
-                <Col>
+                <Col className='content-box'>
                   
-                        {/* <PcapUpload /> */}
-                        <ProtocolsTable />
+                        {!uploaded && <PcapUpload 
+                            pktsData={pktsData}
+                            setPktsData={setPktsData}
+                            summData={summData}
+                            setSummData={setSummData}
+                            uploaded={uploaded}
+                            setUploaded={setUploaded}
+                            isLoading={isLoading}
+                            setIsLoading={setIsLoading}
+                        />}
+                        {uploaded && <ProtocolsTable 
+                            pktsData={pktsData}
+                            setPktsData={setPktsData}
+                            summData={summData}
+                            setSummData={setSummData}
+                            uploaded={uploaded}
+                            setUploaded={setUploaded}
+                            isLoading={isLoading}
+                            setIsLoading={setIsLoading}
+                        />}
                 
                   
                 </Col>

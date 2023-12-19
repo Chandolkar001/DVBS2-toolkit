@@ -1,48 +1,52 @@
 import React from 'react'
 import './ProtocolsTable.css'
 import DataTable from 'react-data-table-component';
-export default function ProtocolsTable() {
+export default function ProtocolsTable(props) {
 
     const summary_columns = [
         {
             name: 'Total Packets',
-            selector: row => row.total_packets,
+            selector: row => row.total,
         },
         {
             name: 'Total TS Packets.',
-            selector: row => row.ts_packets,
+            selector: row => row.total_ts,
+        },
+        {
+            name: 'Total GSE Packets.',
+            selector: row => row.total_gse,
         },
     ];
 
     const details_columns = [
         {
             name: 'No.',
-            selector: row => row.serial_number,
+            selector: row => row.number,
         },
         {
             name: 'Time',
-            selector: row => row.time,
+            selector: row => row.time_elapsed,
         },   
         {
             name: 'Source',
-            selector: row => row.source,
+            selector: row => row.src,
         },
         {
             name: 'Destination',
-            selector: row => row.destination,
+            selector: row => row.dst,
         },
         {
             name: 'Protocol',
-            selector: row => row.protocol,
+            selector: row => row.protocols.join(', '),
         },
         {
             name: 'Length',
             selector: row => row.length,
         },
-        {
-            name: 'Info',
-            selector: row => row.info,
-        },
+        // {
+        //     name: 'Info',
+        //     selector: row => row.info,
+        // },
     ];
 
     const summary_data = [
@@ -76,15 +80,20 @@ export default function ProtocolsTable() {
         }
     ]
 
+    const { pktsData, setPktsData, summData, setSummData, uploaded, setUploaded, isLoading, setIsLoading } = props;
+
     return (<>
-            <DataTable
+            {/* <DataTable
             columns={summary_columns}
-            data={summary_data}
-        />
-            <DataTable
+            data={summData}
+        /> */}
+            <div className='table-box'>
+            <DataTable 
             columns={details_columns}
-            data={details_data}
+            data={pktsData}
+            
         />
+        </div>
     </>
 
 
