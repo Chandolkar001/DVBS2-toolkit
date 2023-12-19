@@ -88,6 +88,8 @@ class packet_classifier:
                 with open(folder_name, 'w') as file:
                     file.write(hexdump(packet, dump=True))
                 file.close()
+            else:
+                print("unknown format found")
         
         except Exception as e:
            print("Couldn't Write payload to file", e)
@@ -98,7 +100,7 @@ class packet_classifier:
 if __name__ == "__main__":
     pc = packet_classifier()
 
-    pkts = rdpcap("/home/dev/Desktop/DVBS2/SIH23-DVBS2/server/server/Packet_Classifier_Service/Media/gmail.pcapng.cap")
+    pkts = rdpcap("Media/VOIP.pcap")
     for pkt in pkts:
 
         pc.save_payload(pkt)
