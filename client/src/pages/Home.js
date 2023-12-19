@@ -4,6 +4,7 @@ import { Col, Row, Container, Button, Dropdown } from 'react-bootstrap';
 import PcapUpload from '../components/pcap/PcapUpload';
 import no_preview from '../assets/no-prev.png'
 import sih_logo from '../assets/sih-logo.png'
+import ProtocolsTable from '../components/tables/ProtocolsTable';
 function Home() {
 
     const sideOptions = [
@@ -62,7 +63,8 @@ function Home() {
                     </div>
                 </Col>
                 <Col>
-                    <PcapUpload />
+                    {/* <PcapUpload /> */}
+                    <ProtocolsTable />
                 </Col>
             </Row>
 
