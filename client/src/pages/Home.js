@@ -63,8 +63,11 @@ function Home() {
                     </div>
                 </Col>
                 <Col>
-                    {/* <PcapUpload /> */}
-                    <ProtocolsTable />
+                  
+                        {/* <PcapUpload /> */}
+                        <ProtocolsTable />
+                
+                  
                 </Col>
             </Row>
 
