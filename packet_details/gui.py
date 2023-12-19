@@ -15,16 +15,16 @@ def escape(event):
 
 def update_text():
     new_text = lorem.sentence()
-    summary.delete("1.0", tk.END)
-    summary.insert(tk.END, new_text)
-    summary.tag_configure("bold", font=("Ubuntu", 11 ,"bold"))
-    summary.tag_add("bold", "1.0", "end")
+    # summary.delete("1.0", tk.END)
+    # summary.insert(tk.END, new_text)
+    # summary.tag_configure("bold", font=("Ubuntu", 12 ,"bold"))
+    # summary.tag_add("bold", "1.0", "end")
 
-    new_text = lorem.sentence()
-    details.delete("1.0", tk.END)
-    details.insert(tk.END, new_text)
-    details.tag_configure("bold", font=("Ubuntu", 11 ,"bold"))
-    details.tag_add("bold", "1.0", "end")
+    # new_text = lorem.sentence()
+    # details.delete("1.0", tk.END)
+    # details.insert(tk.END, new_text)
+    # details.tag_configure("bold", font=("Ubuntu", 12 ,"bold"))
+    # details.tag_add("bold", "1.0", "end")
 
     root.after(500, update_text)
 
@@ -50,7 +50,7 @@ root.bind('<F11>', toggle_fullscreen)
 root.bind('<Escape>', escape)
 
 root.geometry(screen_size)
-toggle_fullscreen() 
+# toggle_fullscreen() 
 
 # root.bind("<Configure>", on_configure)
 
@@ -61,43 +61,49 @@ for i in range(2):
     root.grid_rowconfigure(i, weight=1)
 
 # --- Frames --- #
-menu_section = tk.Frame(root, bg="#1d1927", padx=10, pady=10, relief="solid")
+
+menu_section = tk.LabelFrame(root, text="Menu Section", labelanchor="n", bg="#111111", fg="#d6d6d6", font=("Ubuntu"), padx=10, pady=10, bd=0)
 menu_section.grid(row=0, column=0,rowspan=2,columnspan=1, sticky="nsew")
 
-media_section = tk.Frame(root, bg="#241F31", relief="solid")
+media_section = tk.LabelFrame(root, text="Media Section", labelanchor="n", bg="#222222", fg="#d6d6d6", font=("Ubuntu"), padx=10, pady=10, bd=0)
 media_section.grid(row=0, column=1,rowspan=1,columnspan=9, sticky="nsew")
-
-analyzer_section = tk.Frame(root, bg="#241F31", relief="solid")
-analyzer_section.grid(row=1, column=1,rowspan=1,columnspan=9, sticky="nsew")
-
 media_section.grid_columnconfigure(0, weight=1)
 media_section.grid_rowconfigure(0, weight=1)
 
-for i in range(2):
-    analyzer_section.grid_columnconfigure(i, weight=1)
-analyzer_section.grid_rowconfigure(0, weight=1)
+packet_desc = tk.LabelFrame(root, text="Packet Description", labelanchor="n", bg="#333333", fg="#d6d6d6", font=("Ubuntu"), padx=10, pady=10, bd=0)
+packet_desc.grid(row=1, column=1,rowspan=1,columnspan=9, sticky="nsew")
 
+for i in range(5):
+    packet_desc.grid_columnconfigure(i, weight=1)
+packet_desc.grid_rowconfigure(0, weight=1)
+
+summary_section = tk.LabelFrame(packet_desc, text="Summary Section", labelanchor="n", bg="#444444", fg="#d6d6d6", font=("Ubuntu"), bd=0)
+summary_section.grid(row=0, column=0,rowspan=2,columnspan=3, sticky="nsew", padx=7, pady=5)
+# for i in range(2):
+#     packet_desc.grid_columnconfigure(i, weight=1)
+#     packet_desc.grid_rowconfigure(i, weight=1)
+
+details_section = tk.LabelFrame(packet_desc, text="Details Section", labelanchor="n", bg="#555555", fg="#d6d6d6", font=("Ubuntu"), bd=0)
+details_section.grid(row=0, column=3,rowspan=2,columnspan=2, sticky="nsew", padx=7, pady=5)
 
 # --- Widgets --- #
 
-label_in_frame = tk.Label(menu_section, text="menu_section", font=("Ubuntu"))
-label_in_frame.pack()
 
-text_in_media_section = tk.Text(media_section, bd=-1, bg="#3a3546", fg="#2EC27E")
-text_in_media_section.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
-new_text = "Media"
-text_in_media_section.insert(tk.END, new_text)
+# text_in_media_section = tk.Text(media_section, bd=-1, bg="#3a3546", fg="#2EC27E")
+# text_in_media_section.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+# new_text = "Media"
+# text_in_media_section.insert(tk.END, new_text)
 
 # summary = tk.Label(analyzer_section, bg="#434343", fg="#d6d6d6", text="summary", font=("Ubuntu"))
 # summary.grid(row=0, column=0, sticky="nsew", pady=10,padx=10)
 # details = tk.Label(analyzer_section,bg="#434343", fg="#d6d6d6",text="details", font=("Ubuntu"))
 # details.grid(row=0, column=1, sticky="nsew", pady=10,padx=10)
 
-summary = tk.Text(analyzer_section, bd=-1, bg="#3a3546", fg="#2EC27E")
-summary.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+summary_table = tk.Text(summary_section, bd=-1, bg="#3a3546", fg="#2EC27E")
+summary_table.grid(row=0, column=0, rowspan=2,columnspan=2, sticky="nsew")
 
-details = tk.Text(analyzer_section, bd=-1, background="#3a3546", fg="#2EC27E")
-details.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
+# details = tk.Text(analyzer_section, bd=-1, background="#3a3546", fg="#2EC27E")
+# details.grid(row=0, column=1)
 
 update_text()
 
