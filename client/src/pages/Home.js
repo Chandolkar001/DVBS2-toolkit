@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import './Home.css'
-import { Col, Row, Container, Button, Dropdown } from 'react-bootstrap';
+import { Col, Row, Container, Button, Dropdown, Form, Spinner } from 'react-bootstrap';
 import PcapUpload from '../components/pcap/PcapUpload';
 import no_preview from '../assets/no-prev.png'
 import sih_logo from '../assets/sih-logo.png'
 import ProtocolsTable from '../components/tables/ProtocolsTable';
+import ReactPlayer from 'react-player'
+import axios from 'axios';
+import {JSONTree} from 'react-json-tree'
 function Home() {
 
     const [pktsData, setPktsData] = useState([]);
@@ -44,17 +47,65 @@ function Home() {
         }
 
     ]
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [fileUrl, setFileUrl] = useState(false)
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        setSelectedFile(file);
+    }
+    const handleUpload = async () => {
+        if (!selectedFile) {
+            console.error('No file selected.');
+            return;
+        }
+
+        // Create FormData object to send the file
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+
+        console.log(formData)
+
+        try {
+            // Make Axios POST request
+            setIsButtonDisabled(true)
+            const response = await axios.post('http://localhost:8000/api/files/videostream/', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            setIsButtonDisabled(false)
+
+            // Handle the response
+            console.log('File upload successful:', response.data);
+            let url = "http://localhost:8000" + response.data.video_file
+            console.log(url)
+            setFileUrl(url);
+
+        } catch (error) {
+            // Handle errors
+            console.error('File upload failed:', error);
+        }
+    };
+
+    const jsondata = {
+        array: [1, 2, 3],
+        bool: true,
+        object: {
+          foo: 'bar',
+        }
+      };
     return (
         <Container fluid style={{ height: '100vh' }}>
-            <Row  style={{height: "80px", backgroundColor: "#282828", color: "#ffffff"}} >
+            <Row style={{ height: "80px", backgroundColor: "#282828", color: "#ffffff" }} >
                 <Col xs={10}>
-                <h1>DVB-S2 Parser</h1>
+                    <h1>DVB-S2 Parser</h1>
                 </Col>
                 <Col className='ms-auto'>
-                <img src={sih_logo} alt="no preview" style={{height: '60px', width: 'auto'}} />
+                    <img src={sih_logo} alt="no preview" style={{ height: '60px', width: 'auto' }} />
                 </Col>
-               
-             
+
+
             </Row>
 
             <Row style={{ height: "50%" }}>
@@ -68,29 +119,33 @@ function Home() {
                     </div>
                 </Col>
                 <Col className='content-box'>
-                  
-                        {!uploaded && <PcapUpload 
-                            pktsData={pktsData}
-                            setPktsData={setPktsData}
-                            summData={summData}
-                            setSummData={setSummData}
-                            uploaded={uploaded}
-                            setUploaded={setUploaded}
-                            isLoading={isLoading}
-                            setIsLoading={setIsLoading}
-                        />}
-                        {uploaded && <ProtocolsTable 
-                            pktsData={pktsData}
-                            setPktsData={setPktsData}
-                            summData={summData}
-                            setSummData={setSummData}
-                            uploaded={uploaded}
-                            setUploaded={setUploaded}
-                            isLoading={isLoading}
-                            setIsLoading={setIsLoading}
-                        />}
-                
-                  
+
+                    {!uploaded && <PcapUpload
+                        pktsData={pktsData}
+                        setPktsData={setPktsData}
+                        summData={summData}
+                        setSummData={setSummData}
+                        uploaded={uploaded}
+                        setUploaded={setUploaded}
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading}
+                        isButtonDisabled={isButtonDisabled}
+                        setIsButtonDisabled={setIsButtonDisabled}
+                        fileUrl={fileUrl}
+                        setFileUrl={setFileUrl}
+                    />}
+                    {uploaded && <ProtocolsTable
+                        pktsData={pktsData}
+                        setPktsData={setPktsData}
+                        summData={summData}
+                        setSummData={setSummData}
+                        uploaded={uploaded}
+                        setUploaded={setUploaded}
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading}
+                    />}
+
+
                 </Col>
             </Row>
 
@@ -99,7 +154,7 @@ function Home() {
                 <Col xs={4} >
 
                     <Row className="position-relative">
-                        <Dropdown style={{ position: "absolute", top: 0, left: 0 }}>
+                        {/* <Dropdown style={{ position: "absolute", top: 0, left: 0 }}>
                             <Dropdown.Toggle variant="success" id="dropdown-basic">
                                 Select Channel
                             </Dropdown.Toggle>
@@ -109,12 +164,26 @@ function Home() {
                                 <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
                                 <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
                             </Dropdown.Menu>
-                        </Dropdown>
-                        <img src={no_preview} alt="no preview" style={{ width: "100%", height:"100%", objectFit: "cover" }} />
+                        </Dropdown> */}
+                        {/* <div class="selectFile">
+                            <label for="file">Select file</label>
+                            <input type="file" name="files[]" id="file" onChange={handleFileChange} />
+                            <Button onClick={handleUpload}>Upload</Button><br />
+                        </div> */}
+
+                        {!isButtonDisabled  && !fileUrl && <img src={no_preview} alt="no preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
+                        {isButtonDisabled && <Spinner animation="border" role="status" variant='primary' />}
+                        {fileUrl && <video width="640" height="360" controls loop autoPlay>
+                            <source src={fileUrl} />
+                            Your browser does not support the video tag.
+                        </video>}
                     </Row>
                 </Col>
                 <Col>
                     <h1>Here some options</h1>
+                    {/* <ReactPlayer url='rtp://@:5004' /> */}
+                    <JSONTree data={pktsData} />;
+
                 </Col>
             </Row>
 

@@ -11,12 +11,32 @@ export default function PcapUpload(props) {
   // const [uploaded, setUploaded] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
 
-  const { pktsData, setPktsData, summData, setSummData, uploaded, setUploaded, isLoading, setIsLoading } = props;
+  const { pktsData, setPktsData, summData, setSummData, uploaded, setUploaded, isLoading, setIsLoading,  isButtonDisabled, setIsButtonDisabled, fileUrl, setFileUrl} = props;
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
-
+ const processVideo = async () => {
+    const formData = new FormData();
+    formData.append('file', file);
+    console.log(formData)
+    try {
+      // Make Axios POST request
+      console.log("started")
+      
+      const response = await axios.post('http://localhost:8000/api/files/videostream/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      // Handle the response
+      console.log('File upload successful:', response);
+      setFileUrl("http://localhost:8000"+ response.data.video_file)
+    } catch (error) {
+      // Handle errors
+      console.error('File upload failed:', error);
+    }
+ }
   const handleUpload = async () => {
     if (!file) {
       console.error('No file selected.');
@@ -32,6 +52,7 @@ export default function PcapUpload(props) {
     try {
       // Make Axios POST request
       setIsLoading(true)
+      setIsButtonDisabled(true)
       const response = await axios.post('http://localhost:8000/api/files/process/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -39,13 +60,17 @@ export default function PcapUpload(props) {
       });
 
       // Handle the response
+      
       console.log('File upload successful:', response.data);
       setPktsData(response.data.packets);
       setSummData(response.data.protocol_counts);
       setIsLoading(false);
+      
       setUploaded(true);
       console.log(pktsData);
       console.log(summData);
+      await processVideo();
+      setIsButtonDisabled(false)
 
     } catch (error) {
       // Handle errors
