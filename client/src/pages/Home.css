@@ -20,7 +20,7 @@
     cursor: pointer;
     text-align: center;
     text-decoration: none;
-    flex-grow: 1; /* Make the button take the available vertical space */
+    /* flex-grow: 1; Make the button take the available vertical space */
     font-size: 16px;
     border-radius: 5px;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle box shadow */
@@ -37,3 +37,7 @@
     background-color: #2980b9; /* Slightly darker blue on hover */
   }
 
+.analysis{
+  overflow: scroll;
+  max-height: 30vh;
+}

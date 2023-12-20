@@ -11,7 +11,7 @@ export default function PcapUpload(props) {
   // const [uploaded, setUploaded] = useState(false);
   // const [isLoading, setIsLoading] = useState(false);
 
-  const { pktsData, setPktsData, summData, setSummData, uploaded, setUploaded, isLoading, setIsLoading,  isButtonDisabled, setIsButtonDisabled, fileUrl, setFileUrl} = props;
+  const { pktsData, setPktsData, summData, setSummData, uploaded, setUploaded, isLoading, setIsLoading,  isButtonDisabled, setIsButtonDisabled, fileUrl, setFileUrl, setVideoUrl} = props;
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -31,7 +31,10 @@ export default function PcapUpload(props) {
       });
       // Handle the response
       console.log('File upload successful:', response);
-      setFileUrl("http://localhost:8000"+ response.data.video_file)
+      let urls = response.data.video_files.map(element => "http://localhost:8000" + element)
+      console.log(urls)
+      setFileUrl(urls)
+      setVideoUrl(urls[0])
     } catch (error) {
       // Handle errors
       console.error('File upload failed:', error);

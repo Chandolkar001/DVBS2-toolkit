@@ -4,7 +4,8 @@ from .models import File
 from .serializers import FileSerializer
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .utils import process_pcap, get_extra_data, new_extra_data, process_ts_pcap
+from .utils import process_pcap, get_extra_data, new_extra_data, process_ts_pcap, PID_analysis, multiple_video_extract
+from .sohel import getGSE
 
 class FileListCreateView(generics.ListCreateAPIView):
     queryset = File.objects.all()
@@ -52,10 +53,32 @@ def process_ts_pcap_view(request):
 
         file = File(file = uploaded_file)
         file.save()
-        result = process_ts_pcap(file)
+        # result = process_ts_pcap(file)
+        result = multiple_video_extract(file)
 
         return JsonResponse(result)
     res = HttpResponse(f"GET Request Not Allowed.")
     res.status_code = 400
     return res
 
+@csrf_exempt
+def get_analysis_report_view(request):
+        # try:
+            file = File.objects.all().last()
+            result = PID_analysis(file)
+            return JsonResponse(result)
+        
+@csrf_exempt
+def process_gse(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        uploaded_file = request.FILES['file']
+
+        file = File(file = uploaded_file)
+        file.save()
+        # result = process_ts_pcap(file)
+        result = getGSE(file)
+
+        return JsonResponse(result)
+    res = HttpResponse(f"GET Request Not Allowed.")
+    res.status_code = 400
+    return res
