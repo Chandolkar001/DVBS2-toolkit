@@ -32,6 +32,30 @@ pip3 install -r requirements.txt
 
 ## Tasks
 
+### Project Cloning Setup and Guide
+```mermaid
+flowchart TD
+
+    Z[Captured Packets pcap] --> W
+    Y[Ethernet Frames] --> W
+    X[USB Data] --> W
+
+    W{Packetized \n or \n Continuous?}
+
+    W -->|Continuous| V(Extract elementary \nStream)
+
+    V --> U(Identify scrambling \nOrganize media by PID \nConvert media to a playable format)
+    U --> S(Store the Output Locally)
+    U -->|Display Stream Statistics| F[Front End]
+
+    W -->|Packetized| A(Classify incoming packets \nbased on protocols)
+
+    A --> B(Decode incoming stream \nand extract payload)
+
+    B --> S
+    B -->|Display Statistics| F
+```
+
 
 ### DVBS2 architecture
 <img alt="arch" src="images/dvbsarch.png" height="200"/>
