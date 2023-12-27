@@ -70,3 +70,11 @@ Video resources and documentation.
 9. https://wiki.sans.blue/Tools/pdfs/ScapyCheatSheet_v0.2.pdf scapy cheatsheet
 10. [Link](https://www.etsi.org/deliver/etsi_en/302300_302399/30230701/01.04.01_20/en_30230701v010401a.pdf) - Standard BB Header configurations based on different applications. Refer Page no 62, Table D.2
 11. [Link](https://sci-hub.se/https://ieeexplore.ieee.org/document/4409401) - GSE, MPE, ULE based encapsulation methods. Refer Page no 1 and 2.
+
+## Tasks
+- [ ] Multithreading/ multicore operations for file processing.
+- [ ] Develop separate modules for TS and GSE processing.
+- [ ] Integrate interfaces<br>
+        1. wlan
+        2. eth
+        3. usb
