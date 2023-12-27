@@ -1,4 +1,6 @@
-# Smart India Hackathon 2023 
+# DVBS2 toolkit
+
+## Smart India Hackathon 2023 
 Software Edition 
 
 ## Problem statement
@@ -29,8 +31,19 @@ virtualenv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
 ```
+#### Run backend server
+```
+cd server
+python manage.py runserver
+```
+Backend server listens on localhost:8000
 
-## Tasks
+#### Run frontend
+```
+cd client
+npm run start
+```
+Frontend listens on localhost:3000
 
 ### Lifecycle of an Incoming packet
 ```mermaid
